@@ -44,7 +44,7 @@ main:
 
 get_header:
     # store the header, i.e. first 3 lines of the file
-    beq $t2, 19, end_get_header       # check if value in t2 (0 initially) is greater than 19 (number of characers in first 3 lines)
+    beq $t2, 19, end_get_header         # check if value in t2 (0 initially) is greater than 19 (number of characters in first 3 lines)
     lb $t4, 0($t0)                      # load one byte from fileWords
     sb $t4, 0($t1)                      # store one byte from fileWords
     addi $t0, $t0, 1                    # increment the fileWords pointer position
@@ -65,11 +65,11 @@ main_loop:
     addi $t0, $t0, 1                    # increment position of fileWords
     addi $t2, $t2, 1                    # increment the counter
     addi $t3, $t3, 1                    # increment the bigBuffer
-    beq $t4, 13, pixel_processing       # if t4 = 13 (end of line) go to pixel_processing
+    beq $t4, 13, pixel_manipulation       # if t4 = 13 (end of line) go to pixel_processing
 
     j main_loop                         # jump back to main_loop label
 
-pixel_processing:
+pixel_manipulation:
     addi $t6, $t6, 1                    # increment t6 by 1
     la $t3, smallBuffer                 # load smallBuffer address into t3
 
@@ -94,14 +94,14 @@ str_to_int_loop:
 end_str_to_int_loop:
     add $s2, $s2, $t8               # add t8 to s2
     addi $t8, $t8, 10               # converted integer stored in t8
-    bge $t8, 255, clamp             # if t8 == 255 (max pixel value) --> jump to clamp
-    j dont_clamp
+    bge $t8, 255, lock             # if t8 == 255 (max pixel value) --> jump to clamp
+    j dont_lock
 
-clamp:
+lock:
     li $t8, 255                     # hardcode t8 to 255, since max pixel value was reached
-    j dont_clamp
+    j dont_lock
 
-dont_clamp:
+dont_lock:
     # Define variables (registers)  to be used
     add $s3, $s3, $t8               # set s3 equal to the sum of the resultant integer value and 10
     la $a0, resultString            # load address of the result string
