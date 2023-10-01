@@ -30,18 +30,18 @@ main:
     syscall
 
     #Initialise variables (registers) to be used
-    move $t0, $a1             # t0 will contatin a pointer to the fileWords in memory
-    la $t1, bigBuffer        # t1 contains a pointer to the bigBuffer in memory
-    la $t3, smallBuffer      # t3 contains a pointer to the smallBuffer in memory buffer
-    move $t2, $zero           # t2 will contain the number of bytes read from the inputFile
-    move $s2, $zero           # s2 will store the sum of the pixel values
-    move $s3, $zero           # s3 stores the sum of the brightened pixel values
-    li $t7, 19                # reserve a space of 19 in memory
+    move $t0, $a1                       # t0 will contatin a pointer to the fileWords in memory
+    la $t1, bigBuffer                   # t1 contains a pointer to the bigBuffer in memory
+    la $t3, smallBuffer                 # t3 contains a pointer to the smallBuffer in memory buffer
+    move $t2, $zero                     # t2 will contain the number of bytes read from the inputFile
+    move $s2, $zero                     # s2 will store the sum of the pixel values
+    move $s3, $zero                     # s3 stores the sum of the brightened pixel values
+    li $t7, 19                          # reserve a space of 19 in memory
     
 get_header:
     # store the header, i.e. first 4 lines of the file                 
     beq $t2, 19, end_get_header
-    beq $t2, 1, change_p      # jump to change_p to change from p3 to p2
+    beq $t2, 1, change_p                # jump to change_p to change from p3 to p2
     lb $t4, 0($t0)
     sb $t4, 0($t1)
     addi $t1, $t1, 1
@@ -49,7 +49,7 @@ get_header:
     addi $t2, $t2, 1
     j get_header
 
-change_p:                         # change 3 to 2 in second byte to change file to a greyscale file
+change_p:                               # change 3 to 2 in second byte to change file to a greyscale file
     lb $t4, 0($t0)
     li $t5, 50
     sb $t5, 0($t1)
@@ -60,9 +60,9 @@ change_p:                         # change 3 to 2 in second byte to change file 
 
 end_get_header:
 
-    move $t2, $zero     # t2 stores the number of lines that have been read
-    move $t9, $zero     # t9 stores the number of pixels that have been summed
-    move $s6, $zero     # 6 stores the current running total of the pixels
+    move $t2, $zero                     # t2 stores the number of lines that have been read
+    move $t9, $zero                     # t9 stores the number of pixels that have been summed
+    move $s6, $zero                     # 6 stores the current running total of the pixels
     move $t6, $zero
 
 main_loop:
@@ -79,18 +79,18 @@ main_loop:
     j main_loop
 
 pixel_manipulation:
-    addi $t6, $t6, 1                # increment t6 by 1
-    la $t3, smallBuffer             # load smallBuffer address into t3
+    addi $t6, $t6, 1                    # increment t6 by 1
+    la $t3, smallBuffer                 # load smallBuffer address into t3
      
 end_store_smallBuffer:
     # Initialize constant values             
     li  $s5, 13
     li $s4, 10  
     li  $s7, 48
-    la  $t3, smallBuffer           # load smallBuffer address into t3
+    la  $t3, smallBuffer                # load smallBuffer address into t3
 
 start_convert_string_to_int:              
-    move $t8, $zero                 # initialize t8 to zero
+    move $t8, $zero                     # initialize t8 to zero
 
 str_to_int_loop:
     lb  $s0, 0($t3)
@@ -108,11 +108,11 @@ end_str_to_int_loop:
     j find_average
 
 reset:
-    la $t3, smallBuffer         # load smallBuffer address into t3
+    la $t3, smallBuffer                 # load smallBuffer address into t3
     j main_loop
 
 find_average:
-    move $t9, $zero             # average stored here
+    move $t9, $zero                     # average stored here
 
     div $s3, $s6, 3
     move $s6, $zero
@@ -121,18 +121,18 @@ find_average:
    # Initialize variables (registers) to be used
     la $a0, result_string   
     li $a2, 10              
-    sb $zero, ($a0)         # Null-terminate the string
-    addi $a0, $a0, 10       # Move to the end of the string
+    sb $zero, ($a0)                     # Null-terminate the string
+    addi $a0, $a0, 10                   # Move to the end of the string
 
 convert_loop:
     # Calculate the quotient and remainder
-    div $t8, $a2            # Divide $t8 by 10
-    mflo $s4                # quotient result gets stored in s4
-    mfhi $s5                # remainder of quotient gets stored in s5
+    div $t8, $a2                        # Divide $t8 by 10
+    mflo $s4                            # quotient result gets stored in s4
+    mfhi $s5                            # remainder of quotient gets stored in s5
 
     # Convert integer back to ASCII
     addi $s5, $s5, 48       
-    sb $s5, -1($a0)         # Store the ASCII value in the string
+    sb $s5, -1($a0)                     # Store the ASCII value in the string
 
     # Move to next position in the string
     addi $a0, $a0, -1

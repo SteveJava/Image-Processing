@@ -82,41 +82,41 @@ start_convert_string_to_int:
     move $t8, $zero                     # intitialize t8 to zero
 
 str_to_int_loop:
-    lb $s0, 0($t3)                  # load bite from smallBuffer to 20
-    addi $t3, $t3, 1                # increment bigBuffer by 1
+    lb $s0, 0($t3)                      # load bite from smallBuffer to 20
+    addi $t3, $t3, 1                    # increment bigBuffer by 1
     beq $s0, $s4, end_str_to_int_loop      # if smallBuffer == 13, jump to end_str_loop
-    sub $s1, $s0, $s7               # subtract to get integer value
-    mul $t8, $t8, $s5               # multiply s5 by t8
+    sub $s1, $s0, $s7                   # subtract to get integer value
+    mul $t8, $t8, $s5                   # multiply s5 by t8
     add $t8, $t8, $s1                
     j str_to_int_loop
 
 end_str_to_int_loop:
-    add $s2, $s2, $t8               # add t8 to s2
-    addi $t8, $t8, 10               # converted integer stored in t8
-    bge $t8, 255, lock             # if t8 == 255 (max pixel value) --> jump to clamp
+    add $s2, $s2, $t8                   # add t8 to s2
+    addi $t8, $t8, 10                   # converted integer stored in t8
+    bge $t8, 255, lock                  # if t8 == 255 (max pixel value) --> jump to clamp
     j dont_lock
 
 lock:
-    li $t8, 255                     # hardcode t8 to 255, since max pixel value was reached
+    li $t8, 255                         # hardcode t8 to 255, since max pixel value was reached
     j dont_lock
 
 dont_lock:
     # Define variables (registers)  to be used
-    add $s3, $s3, $t8               # set s3 equal to the sum of the resultant integer value and 10
-    la $a0, resultString            # load address of the result string
-    li $a2, 10                      # set value of a2 to 10
-    sb $zero, ($a0)                 # store value 0 in resultString
-    addi $a0, $a0, 10               # increment string to move to the end of the string
+    add $s3, $s3, $t8                   # set s3 equal to the sum of the resultant integer value and 10
+    la $a0, resultString                # load address of the result string
+    li $a2, 10                          # set value of a2 to 10
+    sb $zero, ($a0)                     # store value 0 in resultString
+    addi $a0, $a0, 10                   # increment string to move to the end of the string
 
 convert_loop:
     # Calculate the quotient and remainder
-    div $t8, $a2                    # divide t8 by 10
-    mflo $s5                        # quotient result gets stored in s5
-    mfhi $s4                        # remainder of quotient gets stored in s4
+    div $t8, $a2                        # divide t8 by 10
+    mflo $s5                            # quotient result gets stored in s5
+    mfhi $s4                            # remainder of quotient gets stored in s4
 
     # Convert integer back to ASCII
-    addi $s4, $s4, 48               # set s5 = 48
-    sb $s4, -1($a0)                  # Store the ASCII value in the string
+    addi $s4, $s4, 48                   # set s5 = 48
+    sb $s4, -1($a0)                     # Store the ASCII value in the string
 
     # Move to next position in string
     addi $a0, $a0, -1               
@@ -153,21 +153,21 @@ end_main_loop:
 write_to_outputFile:
 
     # Open output file
-    li $v0, 13                      # set v0 = 13
-    la $a0, outputFile              # load address of output file
-    li $a1, 1                       # set file to write using code 1
+    li $v0, 13                          # set v0 = 13
+    la $a0, outputFile                  # load address of output file
+    li $a1, 1                           # set file to write using code 1
     syscall
     move $s1, $v0
 
     # Write to the output file
-    li $v0, 15                      # code 15 for writing to file
-    move $a0, $s1                   # file descriptor
+    li $v0, 15                          # code 15 for writing to file
+    move $a0, $s1                       # file descriptor
     la $a1, bigBuffer   
     move $a2, $t7
     syscall
 
     # Close the output file
-    li $v0, 16                      # code 16 for closing file
+    li $v0, 16                          # code 16 for closing file
     move $a0, $s1
     syscall
 
@@ -199,7 +199,7 @@ write_to_outputFile:
     syscall
 
     li $v0, 2
-    mov.s $f12, $f7                     # Load the result into $f12 for printing
+    mov.s $f12, $f7                         # Load the result into $f12 for printing
     syscall
 
     li $v0, 10
