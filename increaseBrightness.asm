@@ -1,36 +1,35 @@
 .data
     inputFile: .asciiz "/Users/zakwan/Desktop/computerScience/csc2002s/mips/assignments/mips_1/sample_images/house_64_in_ascii_cr.ppm"
     outputFile: .asciiz "/Users/zakwan/Desktop/computerScience/csc2002s/mips/assignments/mips_1/testOutput.ppm"
+    newLine: .asciiz "\n"
+    resultMessage: .asciiz "Average pixel value of the original image: \n"
+    resultMessageNew: .asciiz "Average pixel value of new image: \n"
     fileWords: .space 65000
     bigBuffer: .space 65000
     smallBuffer: .space 10
-    newLine: .asciiz "\n"
     resultString: .space 20
-    resultMessage: .asciiz "Average pixel value of the original image: \n"
-    resultMessageNew: .asciiz "Average pixel value of new image: \n"
-
+    
 .text
     .globl main
 main:
     
     # Open input file to read
     li $v0,13           	            # open_file syscall code = 13
-    la $a0, inputFile     	            # get the file name
-    li $a1,0           	                # file flag = read (0)
+    la $a0, inputFile     	            
+    li $a1,0           	                
     syscall
-    move $s0,$v0        	            # save the file descriptor. $s0 = file
-
+    move $s0,$v0        	            
 
     # Read the file contents 
     li $v0, 14		                    # read_file syscall code = 14
-    move $a0,$s0		                # file descriptor
-    la $a1, fileWords    	            # The buffer that holds the string of the WHOLE file
+    move $a0,$s0		                
+    la $a1, fileWords    	           
     la $a2, 65000		                # hardcoded buffer length
     syscall
 
     # Close the input file
     li $v0, 16                          # close_file syscall code = 16
-    move $a0, $s0                       # file descriptor
+    move $a0, $s0                      
     syscall
 
     # Initialise variables (registers) to be used
@@ -43,7 +42,7 @@ main:
     move $s3, $zero                     # s3 stores the sum of the brightened pixel values
 
 get_header:
-    # store the header, i.e. first 3 lines of the file
+    # store the header, i.e. first 4 lines of the file
     beq $t2, 19, end_get_header         # check if value in t2 (0 initially) is greater than 19 (number of characters in first 3 lines)
     lb $t4, 0($t0)                      # load one byte from fileWords
     sb $t4, 0($t1)                      # store one byte from fileWords
@@ -64,8 +63,8 @@ main_loop:
 
     addi $t0, $t0, 1                    # increment position of fileWords
     addi $t2, $t2, 1                    # increment the counter
-    addi $t3, $t3, 1                    # increment the bigBuffer
-    beq $t4, 13, pixel_manipulation       # if t4 = 13 (end of line) go to pixel_processing
+    addi $t3, $t3, 1                    # increment the smallBuffer
+    beq $t4, 13, pixel_manipulation     # if t4 = 13 (end of line) go to pixel_manipulation
 
     j main_loop                         # jump back to main_loop label
 
@@ -73,7 +72,7 @@ pixel_manipulation:
     addi $t6, $t6, 1                    # increment t6 by 1
     la $t3, smallBuffer                 # load smallBuffer address into t3
 
-end_store_small_buffer:
+end_store_smallBuffer:
     li $s4, 13                          # s5 = 13
     li $s5, 10                          # s4 = 10
     li $s7, 48                          # s7 = 48
@@ -88,7 +87,7 @@ str_to_int_loop:
     beq $s0, $s4, end_str_to_int_loop      # if smallBuffer == 13, jump to end_str_loop
     sub $s1, $s0, $s7               # subtract to get integer value
     mul $t8, $t8, $s5               # multiply s5 by t8
-    add $t8, $t8, $s1               # 
+    add $t8, $t8, $s1                
     j str_to_int_loop
 
 end_str_to_int_loop:
@@ -120,26 +119,26 @@ convert_loop:
     sb $s4, -1($a0)                  # Store the ASCII value in the string
 
     # Move to next position in string
-    addi $a0, $a0, -1               #
+    addi $a0, $a0, -1               
 
     # Check if the quotient is zero - this marks the end of the conversion from integer to string
-    beqz $s5, end_convert           #
+    beqz $s5, end_conversion           
 
     # Otherwise, continue loop
-    move $t8, $s5                   #
-    j convert_loop                  #
+    move $t8, $s5                   
+    j convert_loop                  
 
-end_convert:
-    move $s7, $a0                   #
+end_conversion:
+    move $s7, $a0                   
     
 add_to_big_buffer:
-    lb $t8, 0($s7)                  #
+    lb $t8, 0($s7)                  
     beq $t8, $zero, end_add_to_big_buffer
-    sb $t8, 0($t1)                  #
-    addi $t7, $t7, 1                #
-    addi $s7, $s7, 1                #
+    sb $t8, 0($t1)                  
+    addi $t7, $t7, 1                
+    addi $s7, $s7, 1                
     addi $t1, $t1, 1
-    j add_to_big_buffer             #
+    j add_to_big_buffer             
     
 end_add_to_big_buffer:
     lb $t8, newLine
